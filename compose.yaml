@@ -1,0 +1,48 @@
+services:
+
+  mysql:
+    image: mysql:26
+    container_name: mysql_container
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: FraudData
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+    ports: 
+      - "3306:3306"
+
+    volumes: 
+      - mysql_data:/var/lib/mysql
+
+    healthcheck:
+      test: ["CMD","mysqladmin","ping","-h","localhost","-u","${MYSQL_USER}","-p${MYSQL_PASSWORD}",]
+      interval: 5s 
+      timeout: 5s 
+      retries: 10
+
+
+  python:
+    build: .
+    container_name: app_container
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: FraudData
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+
+    command: python3 app/main.py
+
+    volumes:
+      - .:/workspace
+
+volumes:
+  mysql_data:
