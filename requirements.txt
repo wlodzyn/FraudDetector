@@ -1,3 +1,4 @@
+argparse
 mysql-connector-python
 numpy
 pandas

@@ -39,8 +39,6 @@ services:
       DB_USER: ${MYSQL_USER}
       DB_PASSWORD: ${MYSQL_PASSWORD}
 
-    command: python3 app/main.py
-
     volumes:
       - .:/workspace
 
