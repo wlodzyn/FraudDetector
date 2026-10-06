@@ -3,11 +3,13 @@ from mysql.connector.connection import MySQLConnection
 import kagglehub
 from dotenv import load_dotenv
 import os
+import numpy as np
 
-def initialize_data(db: MySQLConnection):
+def initialize_data(db: MySQLConnection, seed: np.int32 | None):
     
     drop_database(db)
     cursor = db.cursor()
+    print(seed)
     
     cursor.execute(f"""
         CREATE TABLE fraud_data (
@@ -42,10 +44,11 @@ def initialize_data(db: MySQLConnection):
     cursor.execute("SELECT COUNT(*) FROM fraud_data")
     table_size = cursor.fetchone()[0]
 
+
     cursor.execute(f"""
         UPDATE fraud_data
         SET split = 'TRAIN'
-        ORDER BY RAND()
+        ORDER BY RAND({seed if seed is not None else ''})
         LIMIT {int(table_size*0.9)}
         ;""")          
 
@@ -53,7 +56,7 @@ def initialize_data(db: MySQLConnection):
         UPDATE fraud_data
         SET split = 'VALIDATE'
         WHERE split IS NULL
-        ORDER BY RAND()
+        ORDER BY RAND({seed if seed is not None else ''})
         LIMIT {int(table_size*0.05)}
         ;""")
 
