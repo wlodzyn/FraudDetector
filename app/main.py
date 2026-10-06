@@ -1,24 +1,20 @@
 from argparse import ArgumentParser
 import mysql.connector
+from sqlalchemy import create_engine
 import os
-import datainit
 import numpy as np
+import datainit
 
 def help_message():
     print("""Commands list:
     help - print this message
-    init [<seed>] - initialize data from Kaggle with data randomization seed
-    drop - remove data""")
+    init [<seed>] - initialize data from Kaggle""")
 
 if __name__ == "__main__":
-    database = mysql.connector.connect(
-                host="mysql",
-                port=3306,
-                database="FraudData",
-                user=os.getenv("DB_USER"),
-                password=os.getenv("DB_PASSWORD"),
-                allow_local_infile=True
-            )
+    
+    engine = create_engine(f"""mysql+mysqlconnector://
+    {os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}
+    @mysql:3306/FraudData""")
     
     parser = ArgumentParser()
     parser.add_argument('command', type=str, 
@@ -29,6 +25,4 @@ if __name__ == "__main__":
     if args.command == 'help':
         help_message()
     elif args.command == 'init':
-        datainit.initialize_data(database,args.seed)
-    elif args.command == 'drop':   
-        datainit.drop_database(database)
+        datainit.initialize_data(args.seed)

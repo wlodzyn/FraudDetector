@@ -1,28 +1,34 @@
 import mysql.connector
-from mysql.connector.connection import MySQLConnection
 import kagglehub
 from dotenv import load_dotenv
 import os
 import numpy as np
 
-def initialize_data(db: MySQLConnection, seed: np.int32 | None):
-    
-    drop_database(db)
+def initialize_data(seed: np.int32 | None):
+
+    db = mysql.connector.connect(
+                    host="mysql",
+                    port=3306,
+                    database="FraudData",
+                    user=os.getenv("DB_USER"),
+                    password=os.getenv("DB_PASSWORD"),
+                    allow_local_infile=True
+                )
     cursor = db.cursor()
-    print(seed)
     
     cursor.execute(f"""
-        CREATE TABLE fraud_data (
+        CREATE TABLE IF NOT EXISTS fraud_data (
         id INT PRIMARY KEY,
-        {" ".join(f"v{i} FLOAT NOT NULL," for i in range(1, 29))}
+        {",".join(f"v{i} FLOAT NOT NULL" for i in range(1, 29))},
         amount FLOAT NOT NULL,
-        class BOOL NOT NULL
+        class BOOL NOT NULL,
+        split ENUM('TRAIN','VALIDATE','TEST') DEFAULT NULL
         );""")
+    cursor.execute("TRUNCATE TABLE fraud_data;")
     
     path = "./data"
     filename = "/creditcard_2023.csv"
     dataset_path="nelgiriyewithana/credit-card-fraud-detection-dataset-2023"
-
     load_dotenv()
     kagglehub.dataset_download(dataset_path, output_dir=path)
     if not os.path.isfile(path+filename):
@@ -34,11 +40,6 @@ def initialize_data(db: MySQLConnection, seed: np.int32 | None):
         INTO TABLE fraud_data
         FIELDS TERMINATED BY ','
         IGNORE 1 ROWS
-        ;""")
-    
-    cursor.execute("""
-        ALTER TABLE fraud_data 
-        ADD COLUMN split ENUM('TRAIN','VALIDATE','TEST') DEFAULT NULL
         ;""")
 
     cursor.execute("SELECT COUNT(*) FROM fraud_data")
@@ -67,9 +68,5 @@ def initialize_data(db: MySQLConnection, seed: np.int32 | None):
         ;""")
 
     db.commit()
-
-        
-def drop_database(db: MySQLConnection):
-    cursor = db.cursor()
-    cursor.execute("DROP TABLE IF EXISTS fraud_data;")
-    db.commit()
+    cursor.close()
+    db.close()

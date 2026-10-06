@@ -1,6 +1,8 @@
 argparse
 mysql-connector-python
+SQLAlchemy
 kagglehub
 dotenv
 numpy
+matplotlib
 pandas
