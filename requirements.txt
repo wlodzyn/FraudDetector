@@ -1,4 +1,6 @@
 argparse
 mysql-connector-python
+kagglehub
+dotenv
 numpy
 pandas
