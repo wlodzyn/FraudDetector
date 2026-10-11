@@ -12,7 +12,8 @@ def help_message():
     help - print this message
     init [<seed>] - initialize data from Kaggle
     histo [<bins>] - create histograms for features
-    qqplot - create Q-Q plots for features""")
+    qqplot - create Q-Q plots for features
+    scatter - create scatter plot matrix for features""")
 
 if __name__ == "__main__":
     
@@ -20,7 +21,7 @@ if __name__ == "__main__":
     
     parser = ArgumentParser()
     parser.add_argument('command', type=str, 
-        choices=['help','init','histo','qqplot'])
+        choices=['help','init','histo','qqplot','scatter'])
     parser.add_argument("number", type=np.int32, nargs="?")
     args = parser.parse_args()
 
@@ -32,3 +33,5 @@ if __name__ == "__main__":
         datavisual.histograms(engine,args.number)
     elif args.command == 'qqplot':
         datavisual.qqplots(engine)
+    elif args.command == 'scatter':
+        datavisual.scatterplot_matrix(engine)
