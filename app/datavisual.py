@@ -71,17 +71,25 @@ def qqplots(engine: Engine):
 
 
 def scatterplot_matrix(engine: Engine):
-    df = pd.read_sql(f"""SELECT {",".join(f"v{i}" for i in range(1, 29))},amount 
-                            FROM fraud_data WHERE split = 'TRAIN' LIMIT 10000""", engine)
-    df.rename(columns={"amount":"amt"},inplace=True)
+    df0 = pd.read_sql(f"""SELECT {",".join(f"v{i}" for i in range(1, 29))},amount 
+                            FROM fraud_data WHERE split = 'TRAIN' AND class=0 LIMIT 5000""", engine)
+    df1 = pd.read_sql(f"""SELECT {",".join(f"v{i}" for i in range(1, 29))},amount 
+                                FROM fraud_data WHERE split = 'TRAIN' AND class=1 LIMIT 5000""", engine)
+    df0.rename(columns={"amount":"amt"},inplace=True)
+    df1.rename(columns={"amount":"amt"},inplace=True)
 
     fig, axes = plt.subplots(nrows=29,ncols=29,figsize=(64, 64))
-    for axes_x, col_x in zip(axes[:,],df):
-        for ax, col_y in zip(axes_x,df):
+    for axes_x, col_x in zip(axes[:,],df0):
+        for ax, col_y in zip(axes_x,df0):
             if col_x != col_y:
-                ax.scatter(df[col_x], df[col_y],s=0.05)
-                ax.set_xlim(np.percentile(df[col_x], [1, 99]))
-                ax.set_ylim(np.percentile(df[col_y], [1, 99]))
+                ax.scatter(df0[col_x], df0[col_y],s=0.05, color='blue')
+                ax.scatter(df1[col_x], df1[col_y],s=0.05, color='red')
+                y0=np.percentile(df0[col_y], [1, 99])
+                y1=np.percentile(df1[col_y], [1, 99])
+                ax.set_ylim(min(y0[0], y1[0]), max(y0[1], y1[1]))
+                x0=np.percentile(df0[col_x], [1, 99])
+                x1=np.percentile(df1[col_x], [1, 99])
+                ax.set_xlim(min(x0[0], x1[0]), max(x0[1], x1[1]))
             else:
                 ax.text(0.5, 0.5, col_x, fontsize=40,
                         transform=ax.transAxes,
