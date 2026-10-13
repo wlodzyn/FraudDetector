@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import datainit
 import datavisual
+import models
 
 def help_message():
     print("""Commands list:
@@ -13,7 +14,8 @@ def help_message():
     init [<seed>] - initialize data from Kaggle
     histo [<bins>] - create histograms for features
     qqplot - create Q-Q plots for features
-    scatter - create scatter plot matrix for features""")
+    scatter - create scatter plot matrix for features
+    logistic - train and test logistic regression model""")
 
 if __name__ == "__main__":
     
@@ -21,7 +23,7 @@ if __name__ == "__main__":
     
     parser = ArgumentParser()
     parser.add_argument('command', type=str, 
-        choices=['help','init','histo','qqplot','scatter'])
+        choices=['help','init','histo','qqplot','scatter','logistic'])
     parser.add_argument("number", type=np.int32, nargs="?")
     args = parser.parse_args()
 
@@ -35,3 +37,5 @@ if __name__ == "__main__":
         datavisual.qqplots(engine)
     elif args.command == 'scatter':
         datavisual.scatterplot_matrix(engine)
+    elif args.command == 'logistic':
+        models.logistic_regression(engine)
