@@ -50,7 +50,7 @@ def initialize_data(seed: np.int32 | None):
         UPDATE fraud_data
         SET split = 'TRAIN'
         ORDER BY RAND({seed if seed is not None else ''})
-        LIMIT {int(table_size*0.9)}
+        LIMIT {int(table_size*0.8)}
         ;""")          
 
     cursor.execute(f"""
@@ -58,7 +58,7 @@ def initialize_data(seed: np.int32 | None):
         SET split = 'VALIDATE'
         WHERE split IS NULL
         ORDER BY RAND({seed if seed is not None else ''})
-        LIMIT {int(table_size*0.05)}
+        LIMIT {int(table_size*0.1)}
         ;""")
 
     cursor.execute("""

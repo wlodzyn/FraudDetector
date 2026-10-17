@@ -29,7 +29,7 @@ def histograms(engine: Engine, bins: np.uint32 | None):
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc=(0.79,0.08), fontsize=14, markerscale=3)
     plt.subplots_adjust(wspace=0.1, hspace=0.3)
-    plt.savefig("plots/histograms.png", bbox_inches="tight")
+    plt.savefig("results/histograms.png", bbox_inches="tight")
 
 
 def qqplots(engine: Engine):
@@ -67,7 +67,7 @@ def qqplots(engine: Engine):
     fig.legend(handles=[ax.get_lines()[0], ax.get_lines()[1]],
             labels=['not fraudulent', 'fraudulent'], loc=(0.75,0.08), fontsize=14, markerscale=3)
     plt.subplots_adjust(wspace=0.1, hspace=0.3)
-    plt.savefig("plots/QQplots.png", bbox_inches="tight")
+    plt.savefig("results/QQplots.png", bbox_inches="tight")
 
 
 def scatterplot_matrix(engine: Engine):
@@ -92,4 +92,4 @@ def scatterplot_matrix(engine: Engine):
             ax.set_yticks([])
 
     plt.subplots_adjust(wspace=0.05, hspace=0.05)
-    plt.savefig("plots/scatterplots.png", bbox_inches="tight")
+    plt.savefig("results/scatterplots.png", bbox_inches="tight")
